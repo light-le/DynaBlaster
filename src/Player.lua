@@ -26,6 +26,10 @@ function Player:collides(target)
     -- because player head perspective could overlap with target, only account for half of y
     -- local selfY, selfHeight = self.y + self.height / 2, self.height - self.height / 2
     
+    if target == nil then
+        return false
+    end
+    
     return not (self.x + self.width - 1 < target.x or self.x + 1 > target.x + target.width or
                 -- selfY - 1 + selfHeight < target.y or selfY > target.y + target.height)
                 self.y + self.height - 1 < target.y or self.y + 4 > target.y + target.height) 
