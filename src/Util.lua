@@ -39,25 +39,28 @@ function ComputeYtile(y)
 end
 
 
--- return true if this tile is either brick, pillar or wall, useful for fire stopper, monster AI walk
-function hitBrickPillarWall(xtile, ytile, room)
-    -- check if this tile would hit any of brick, pillar or wall, thus stop the fire range
-    return room.brick_coors[ytile][xtile] or -- if hit brick
-           (ytile % 2 == 1 and xtile % 2 == 0) or -- if hit pillar
-           xtile < 3 or MAP_WIDTH - xtile < 2 or ytile < 2 or MAP_HEIGHT - ytile < 1 -- if hit pillar
+function hitBrick(xtile, ytile, room)
+    return room.brick_coors[ytile][xtile]
 end
 
-function hitBrickPillarWallBomb(xtile, ytile, room)
-    if hitBrickPillarWall(xtile, ytile, room) then
-        return true
-    end
-
+function hitBomb(xtile, ytile, room)
     for b, bomb in pairs(room.bombs) do
         if xtile == bomb.xtile and ytile == bomb.ytile then
             return true
         end
     end
     return false
+end
+
+
+function hitWallPillar(xtile, ytile)
+    return (ytile % 2 == 1 and xtile % 2 == 0) or  -- pillar rows
+           xtile < 3 or MAP_WIDTH - xtile < 2 or ytile < 2 or MAP_HEIGHT - ytile < 1  -- wall boundaries
+end
+
+
+function hitBrickPillarWallBomb(xtile, ytile, room)
+    return hitBrick(xtile, ytile, room) or hitWallPillar(xtile, ytile) or hitBomb(xtile, ytile, room)
 end
 
 
