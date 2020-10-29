@@ -19,6 +19,7 @@ function BombIdleState:init(bomb, player)
     self.bomb.dead = true
     self.bomb.x = (self.bomb.xtile-1)*TILE_SIZE
     self.bomb.y = OFFSET_Y + (self.bomb.ytile-1)*TILE_SIZE
+    self.bomb.canplayeron = true
 end
 
 
@@ -29,15 +30,15 @@ function BombIdleState:update(dt)
         self.bomb.x = (self.bomb.xtile-1)*TILE_SIZE
         self.bomb.y = OFFSET_Y + (self.bomb.ytile-1)*TILE_SIZE
         self.time = self.time + dt
+        
+        -- if player nolonger collides (on) bomb after deploy, change the state to false to block player from moving
+        if not self.player:collides(self.bomb) then
+            self.bomb.canplayeron = false
+        end
     end
     
     if self.time >= TIME_TO_EXPLODE then
         self.bomb:changeState('explode')
-    end
-
-    -- if player nolonger collides (on) bomb after deploy, change the state to false to block player from moving
-    if not self.player:collides(bomb) then
-        self.bomb.canplayeron = false
     end
 end
 

@@ -47,7 +47,7 @@ function BombExplodeState:spawnFires(bomb, room)
             -- check if hits wall, pillar or brick to stop range
             fire_ytile = fire_ytile + dytile[direction]
             fire_xtile = fire_xtile + dxtile[direction]
-            if hitBrickPillarWall(fire_xtile, fire_ytile, room) then -- if hitting any hard stuff
+            if hitBrickPillarWallBomb(fire_xtile, fire_ytile, room) then -- if hitting any hard stuff
                 if room.brick_coors[fire_ytile][fire_xtile] then -- if hit brick, trigger destroy
                     room.brick_coors[fire_ytile][fire_xtile]:getExploded()
                 end

@@ -37,14 +37,14 @@ function PlayerWalkState:update(dt)
     self.player.ytile = ComputeYtile(self.player.y + self.player.height - TILE_SIZE/2)
 
     -- auto snap during move
-    -- TODO makes player cannot pass bomb here after bomb.playeron is false
+    -- TODO makes player cannot pass bomb here after bomb.canplayeron is false
     if self.player.direction == 'left' or self.player.direction == 'right' then
         local dirvec = self.player.direction == 'right' and 1 or -1
         if not self.player.canWalkThru then -- check for brick if player has no walkthru ability
-            if self.player.direction == 'left' and self.room.brick_coors[self.player.ytile][ComputeXtile(self.player.x-1)] then
+            if self.player.direction == 'left' and hitBrick(ComputeXtile(self.player.x-1), self.player.ytile, self.room) then  -- self.room.brick_coors[self.player.ytile][ComputeXtile(self.player.x-1)] then
                 dirvec = 0
             end
-            if self.player.direction == 'right' and self.room.brick_coors[self.player.ytile][ComputeXtile(self.player.x+self.player.width+1)] then
+            if self.player.direction == 'right' and hitBrick(ComputeXtile(self.player.x+self.player.width+1), self.player.ytile, self.room) then -- self.room.brick_coors[self.player.ytile][ComputeXtile(self.player.x+self.player.width+1)] then
                 dirvec = 0
             end
         end
@@ -54,13 +54,20 @@ function PlayerWalkState:update(dt)
             self.player.y = OFFSET_Y + self.player.ytile*TILE_SIZE - self.player.height
             self.player.x = self.player.x + self.player.walkSpeed*dt*dirvec
         end
+
+        -- cancel movement if hit bomb
+        for b, bomb in pairs(self.room.bombs) do
+            if self.player:collides(bomb) and not bomb.canplayeron then
+                self.player.x = self.player.x - self.player.walkSpeed*dt*dirvec
+            end
+        end
     elseif self.player.direction == 'up' or self.player.direction == 'down' then
         local dirvec = self.player.direction == 'down' and 1 or -1
         if not self.player.canWalkThru then
-            if self.player.direction == 'up' and self.room.brick_coors[ComputeYtile(self.player.y + self.player.height - TILE_SIZE - 1)][self.player.xtile] then
+            if self.player.direction == 'up' and hitBrick(self.player.xtile, ComputeYtile(self.player.y + self.player.height - TILE_SIZE - 1), self.room) then
                 dirvec = 0
             end
-            if self.player.direction == 'down' and self.room.brick_coors[ComputeYtile(self.player.y + self.player.height + 1)][self.player.xtile] then
+            if self.player.direction == 'down' and hitBrick(self.player.xtile, ComputeYtile(self.player.y + self.player.height + 1), self.room) then
                 dirvec = 0
             end
         end
@@ -68,6 +75,13 @@ function PlayerWalkState:update(dt)
         if self.player.xtile % 2 == 1 then
             self.player.x = (self.player.xtile-1)*TILE_SIZE
             self.player.y = self.player.y + self.player.walkSpeed*dt*dirvec
+        end
+
+        -- cancel movement if hit bomb
+        for b, bomb in pairs(self.room.bombs) do
+            if self.player:collides(bomb) and not bomb.canplayeron then
+                self.player.y = self.player.y - self.player.walkSpeed*dt*dirvec
+            end
         end
     end
 
