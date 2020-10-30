@@ -11,8 +11,6 @@ There are pickups which can power up player too but have not yet been implemente
 This project idea is inspired by Legend of 50 class. It has 3 game states plus multiple player/entities/bomb states. Player and monsters have to move in grid. Monsters are programed to move randomly but never hit wall, bricks or pillars. Bombs are timed before explosion and the explosion spawns fires in 4 directions that kill player/monsters, unless obstructed by wall/bricks/pillars. Therefore, it has a complexity as the games implemented in this class.
 
 A few features to be implemented in the upcoming versions:
-- Chain Explosion (currently getting stack overflow error)
-- Entities should not be able overpass bombs
 - Powerup items that enhance bomb stock and fire range (should start with 1)
 - Other advanced powerups (life point, shield, auto-bomb, brick-overpass, bomb-kick, faster speed)
 - Player should go invisible after each death

@@ -18,7 +18,7 @@ function BombExplodeState:init(bomb, room)
     self.time = 0
 
 
-    self.deployed = false -- no longer deployed if exploded
+    self.bomb.deployed = false -- no longer deployed if exploded
     self.fires = self:spawnFires(self.bomb, self.room)  -- init empty fire object first
     gSounds['boom']:play()
 end
@@ -50,8 +50,14 @@ function BombExplodeState:spawnFires(bomb, room)
             if hitBrickPillarWallBomb(fire_xtile, fire_ytile, room) then -- if hitting any hard stuff
                 if room.brick_coors[fire_ytile][fire_xtile] then -- if hit brick, trigger destroy
                     room.brick_coors[fire_ytile][fire_xtile]:getExploded()
+                else -- if hits any of bomb, set it to explode
+                    for b, bomb in pairs(self.room.bombs) do
+                        if bomb.xtile == fire_xtile and bomb.ytile == fire_ytile and bomb.deployed then
+                            bomb:changeState('explode')
+                        end
+                    end
                 end
-                break -- stop the loop
+                break -- stop the loop of fire in 1 direction
             else
                 table.insert(fires, Fire {
                     animations = ENTITY_DEFS['fire'].animations,
@@ -61,13 +67,6 @@ function BombExplodeState:spawnFires(bomb, room)
                     width = TILE_SIZE,
                     height = TILE_SIZE,
                 })
-                
-                -- trigger the bomb in range to explosion too, ERROR stack overflow
-                -- for b, bomb in pairs(self.room.bombs) do
-                --     if bomb.xtile == fire_xtile and bomb.ytile == fire_ytile and bomb.deployed then
-                --         bomb:changeState('explode')
-                --     end
-                -- end
             end
             if firetile == room.player.firerange then -- if it's the end of the fire range
                 fires[#fires]:changeAnimation(direction)
